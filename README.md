@@ -59,3 +59,15 @@ Telegram webhook uchun lokal server internetdan ko‘rinadigan HTTPS URL’da bo
 ## Ma’lumot xavfsizligi
 
 Ommaviy deployment’da `DASHBOARD_PASSWORD` ni albatta belgilang. `TELEGRAM_BOT_TOKEN`, `CRON_SECRET` va webhook secret’ni brauzerga yoki GitHub repository ichidagi kodga chiqarmang. Bot buyruqlari `BOT_OWNER_ID` bilan cheklanadi; panel API’lari esa admin sessiyasini talab qiladi.
+
+## Shaxsiy Telegram akkaunti orqali yuborish (sinov varianti)
+
+Bu ixtiyoriy rejim; odatiy bot ishlashini o'zgartirmaydi. Shaxsiy akkaunt rejimida dastur faqat akkaunt a'zo bo'lgan guruhlarni tanlaydi, ularga avtomatik qo'shilmaydi. Faqat ruxsat berilgan guruhlarga yuboring. Telegram akkauntini cheklashi mumkin. Foydalanishdan oldin kichik sinov guruhida tekshiring.
+
+1. Node.js 20 yoki undan yangi versiyani shaxsiy kompyuteringizga o'rnating. Shu loyiha papkasida `npm install` va `node scripts/telegram-login.cjs` ishga tushiring. Telefon raqami, API ID/HASH, Telegram yuborgan kirish kodi va agar so'ralsa 2FA parolini faqat o'z kompyuteringizdagi terminalga kiriting. Dasturni boshqa birov ko'rayotgan terminalda ishlatmang.
+2. Ekranda chiqqan sessiya qatori akkauntingizga kirishga teng maxfiy ma'lumotdir. Uni hech kimga yubormang, GitHubga, logga yoki e'lon matniga joylamang. Faqat Render servisining Environment bo'limiga `TELEGRAM_USER_SESSION` sifatida kiriting. Render'da `TELEGRAM_API_ID`, `TELEGRAM_API_HASH` ham bo'lsin. Agar biror kishi sessiyani ko'rsa, Telegram Settings > Devices orqali sessiyani bekor qiling.
+3. Render servisida `TELEGRAM_SENDER=account` qilib saqlang va redeploy qiling. Shundan keyin xabarlar bot emas, shaxsiy akkauntdan yuboriladi. Bot rejimiga qaytish uchun `TELEGRAM_SENDER` ni o'chiring. Kodlar va sessiya Render loglariga yoki GitHub Actionsga yozilmasligi kerak.
+4. Panelda kanal turini emas, guruhni tanlang; akkauntingiz a'zo bo'lgan guruhning @username yoki -100... chat ID sini kiriting. Shaxsiy invite linklar qabul qilinmaydi. Bot rejimida qo'shilgan kanallar akkaunt rejimida guruh bo'lmasa xatoga uchraydi.
+5. Jadval ishlashi uchun GitHub repository'dagi Actions workflow'ni yoqing va Render'dagi qiymatlar bilan bir xil `APP_URL` hamda `CRON_SECRET` ni GitHub Actions Secrets'ga qo'shing. Secretlar kodda saqlanmasin. GitHub schedule kechikishi yoki ishga tushmasligi mumkin; Render bepul servisi uxlaganda ham ishga tushish kechikadi.
+
+Qurish va TypeScript tekshirildi; haqiqiy Telegram akkaunti va real yuborish bilan sinov o'tkazilmagan. Ehtiyot bo'lib avval sinov guruhida bitta xabar yuboring. Agar 2FA, flood limit yoki session xatosi chiqsa, cheklovlarni chetlab o'tmang.

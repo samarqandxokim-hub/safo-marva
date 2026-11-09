@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+:root {
+  --page: #f5f6f8;
+  --ink: #17221f;
+  --muted: #7a8581;
+  --line: #e9ece9;
+  --green: #0f5048;
+  --green-soft: #e8f3ef;
+  --gold: #d9a358;
+}
+
+* { box-sizing: border-box; }
+html { min-height: 100%; background: var(--page); }
+body { min-height: 100vh; margin: 0; color: var(--ink); background: var(--page); font-family: Arial, Helvetica, sans-serif; }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+::selection { background: #d6ece4; color: #123b34; }
+
+.app-scrollbar::-webkit-scrollbar { width: 7px; height: 7px; }
+.app-scrollbar::-webkit-scrollbar-thumb { border-radius: 999px; background: #d7dfdc; }
+
+@keyframes soft-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.animate-soft-in { animation: soft-in .35s ease-out both; }
+
+.form-control { width: 100%; min-height: 40px; border: 1px solid #e5ebe7; border-radius: 11px; background: #fff; padding: 9px 11px; color: #34423c; font-size: 12px; outline: none; transition: border-color .15s ease, box-shadow .15s ease; }
+.form-control::placeholder { color: #a7b0ab; }
+.form-control:focus { border-color: #83b69d; box-shadow: 0 0 0 3px rgba(83, 147, 112, .11); }
+.form-control:disabled { background: #f4f6f5; color: #9aa39f; }
+
+@media (max-width: 767px) {
+  .mobile-safe-bottom { padding-bottom: calc(92px + env(safe-area-inset-bottom)); }
+}

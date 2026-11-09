@@ -1,0 +1,22 @@
+name: Telegram publish
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: telegram-publish
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check scheduled campaigns
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          test -n "$APP_URL" && test -n "$CRON_SECRET"
+          case "$APP_URL" in https://*) ;; *) echo 'APP_URL must use HTTPS'; exit 1;; esac
+          curl --fail --silent --show-error --max-time 300 -X POST -H "Authorization: Bearer $CRON_SECRET" "${APP_URL%/}/api/cron/publish"
