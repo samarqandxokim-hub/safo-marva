@@ -1,3 +1,4 @@
+import { findJoinedGroup, personalMode, withPersonalClient } from "@/lib/personal-telegram";
 import { db } from "@/db";
 import { campaigns, channels, deliveries } from "@/db/schema";
 import { sendTelegramMessage } from "@/lib/telegram";
@@ -6,7 +7,7 @@ import { inArray, sql } from "drizzle-orm";
 type Campaign = typeof campaigns.$inferSelect;
 
 export async function deliverCampaign(campaign: Campaign) {
-  if (!process.env.TELEGRAM_BOT_TOKEN?.trim()) {
+  if (!personalMode() && !process.env.TELEGRAM_BOT_TOKEN?.trim()) {
     throw new Error("Telegram bot token sozlanmagan. Haqiqiy e’lon yuborilmadi.");
   }
 
@@ -34,7 +35,13 @@ export async function deliverCampaign(campaign: Campaign) {
     }
 
     try {
-      const message = await sendTelegramMessage(channel.chatId, campaign.body);
+      const message = personalMode()
+        ? await withPersonalClient(async (client) => {
+            const group = await findJoinedGroup(client, channel.chatId);
+            const sent = await group.send({ message: campaign.body, parseMode: undefined });
+            return { message_id: sent.id };
+          })
+        : await sendTelegramMessage(channel.chatId, campaign.body);
       await db.insert(deliveries).values({
         campaignId: campaign.id,
         channelId: channel.id,

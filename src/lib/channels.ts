@@ -1,3 +1,4 @@
+import { findJoinedGroup, personalMode, withPersonalClient } from "@/lib/personal-telegram";
 import { db } from "@/db";
 import { channels } from "@/db/schema";
 import { normalizeChatReference, telegramApi, type TelegramChat, type TelegramMember } from "@/lib/telegram";
@@ -8,7 +9,12 @@ export async function addChannel(input: { title?: string; chatReference: string;
   let username: string | null = chatId.startsWith("@") ? chatId.slice(1) : null;
   let type = input.fallbackType === "group" ? "group" : "channel";
 
-  if (process.env.TELEGRAM_BOT_TOKEN?.trim()) {
+  if (personalMode()) {
+    if (input.fallbackType !== "group") throw new Error("Shaxsiy akkaunt rejimida faqat guruh qo‘shish mumkin.");
+    const dialog = await withPersonalClient((client) => findJoinedGroup(client, chatId));
+    title = dialog.title || title;
+    type = "group";
+  } else if (process.env.TELEGRAM_BOT_TOKEN?.trim()) {
     const chat = await telegramApi<TelegramChat>("getChat", { chat_id: chatId });
     if (!chat.title || !["channel", "group", "supergroup"].includes(chat.type)) {
       throw new Error("Faqat Telegram kanal yoki guruhini qo‘shish mumkin.");
