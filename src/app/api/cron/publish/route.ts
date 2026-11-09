@@ -1,3 +1,4 @@
+import { personalMode } from "@/lib/personal-telegram";
 import { db } from "@/db";
 import { campaigns } from "@/db/schema";
 import { deliverCampaign } from "@/lib/campaign-delivery";
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
   if (!authorized(request)) {
     return NextResponse.json({ error: "Ruxsat yo‘q. CRON_SECRET ni tekshiring." }, { status: 401 });
   }
-  if (!getTelegramToken()) {
+  if (!personalMode() && !getTelegramToken()) {
     return NextResponse.json({ error: "TELEGRAM_BOT_TOKEN sozlanmagan." }, { status: 503 });
   }
 
